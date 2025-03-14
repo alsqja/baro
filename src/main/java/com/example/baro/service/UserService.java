@@ -1,6 +1,8 @@
 package com.example.baro.service;
 
 import com.example.baro.model.User;
+import com.example.baro.model.dto.TokenDto;
+import com.example.baro.model.dto.UserLoginReqDto;
 import com.example.baro.model.dto.UserResDto;
 import com.example.baro.model.dto.UserSignupDto;
 import com.example.baro.repository.UserRepository;
@@ -28,5 +30,9 @@ public class UserService {
         User user = new User(id, dto.getUsername(), passwordEncoder.encode(dto.getPassword()), dto.getNickname());
 
         return new UserResDto(userRepository.save(user));
+    }
+
+    public TokenDto login(UserLoginReqDto dto) {
+        return null;
     }
 }
