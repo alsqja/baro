@@ -18,4 +18,8 @@ public class User {
         this.id = id;
         this.userRole = UserRole.USER;
     }
+
+    public void updateRole(UserRole userRole) {
+        this.userRole = userRole;
+    }
 }
