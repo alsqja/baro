@@ -32,12 +32,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
+        authenticate(request, response);
+
         filterChain.doFilter(request, response);
     }
 
     private void authenticate(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         String token = getTokenFromRequest(request);
+
         if (!jwtProvider.validToken(token)) {
             return;
         }
@@ -54,6 +57,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 userDetails.getPassword(),
                 userDetails.getAuthorities()
         );
+
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
