@@ -1,5 +1,6 @@
 package com.example.baro.repository;
 
+import com.example.baro.enums.UserRole;
 import com.example.baro.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -46,5 +47,21 @@ public class UserRepository {
         Long id = usernameIndex.get(username);
 
         return id == null ? Optional.empty() : Optional.of(users.get(id));
+    }
+
+    public Optional<User> findById(Long id) {
+
+        return Optional.ofNullable(users.get(id));
+    }
+
+    public User updateRoleById(Long id, UserRole userRole) {
+
+        User user = users.get(id);
+
+        user.updateRole(userRole);
+
+        users.put(user.getId(), user);
+
+        return users.get(id);
     }
 }

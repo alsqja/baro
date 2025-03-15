@@ -1,5 +1,6 @@
 package com.example.baro.service;
 
+import com.example.baro.enums.UserRole;
 import com.example.baro.model.User;
 import com.example.baro.model.dto.TokenDto;
 import com.example.baro.model.dto.UserLoginReqDto;
@@ -58,5 +59,12 @@ public class UserService {
         String accessToken = jwtProvider.generateToken(user);
 
         return new TokenDto(accessToken);
+    }
+
+    public UserResDto updateRole(Long id, UserRole userRole) {
+
+        User user = userRepository.updateRoleById(id, userRole);
+
+        return new UserResDto(user);
     }
 }
