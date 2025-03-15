@@ -19,7 +19,7 @@ public class AdminUserController {
 
     private final UserService userService;
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/{id}/roles")
     public ResponseEntity<UserResDto> updateUser(
             @RequestBody UpdateUserRoleReqDto dto,
             @PathVariable Long id

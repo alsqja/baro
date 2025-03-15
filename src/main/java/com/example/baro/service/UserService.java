@@ -1,6 +1,9 @@
 package com.example.baro.service;
 
 import com.example.baro.enums.UserRole;
+import com.example.baro.error.ErrorCode;
+import com.example.baro.error.exception.BadRequestException;
+import com.example.baro.error.exception.NotFoundException;
 import com.example.baro.model.User;
 import com.example.baro.model.dto.TokenDto;
 import com.example.baro.model.dto.UserLoginReqDto;
@@ -9,14 +12,12 @@ import com.example.baro.model.dto.UserSignupDto;
 import com.example.baro.repository.UserRepository;
 import com.example.baro.util.JwtProvider;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +31,7 @@ public class UserService {
     public UserResDto signup(UserSignupDto dto) {
 
         if (userRepository.existByUsername(dto.getUsername())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username is already in use");
+            throw new BadRequestException(ErrorCode.USER_ALREADY_EXISTS);
         }
 
         Long id = userRepository.findNextId();
@@ -42,10 +43,10 @@ public class UserService {
 
     public TokenDto login(UserLoginReqDto dto) {
 
-        User user = userRepository.findByUsername(dto.getUsername()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        User user = userRepository.findByUsername(dto.getUsername()).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND));
 
         if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Incorrect password");
+            throw new BadRequestException(ErrorCode.INVALID_CREDENTIALS);
         }
 
         Authentication authentication = authenticationManager.authenticate(
@@ -63,8 +64,10 @@ public class UserService {
 
     public UserResDto updateRole(Long id, UserRole userRole) {
 
-        User user = userRepository.updateRoleById(id, userRole);
+        userRepository.findById(id).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND));
 
-        return new UserResDto(user);
+        User updated = userRepository.updateRoleById(id, userRole);
+
+        return new UserResDto(updated);
     }
 }
