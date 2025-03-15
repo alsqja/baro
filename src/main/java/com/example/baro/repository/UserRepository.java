@@ -4,17 +4,21 @@ import com.example.baro.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
 public class UserRepository {
 
-    private final List<User> users;
+    private final Map<Long, User> users = new HashMap<>();
+    private final Map<String, Long> usernameIndex = new HashMap<>();
+    private Long id;
 
     public boolean existByUsername(String username) {
 
-        for (User user : users) {
+        for (User user : users.values()) {
             if (user.getUsername().equals(username)) {
                 return true;
             }
@@ -25,13 +29,22 @@ public class UserRepository {
 
     public Long findNextId() {
 
-        return users.isEmpty() ? 1L : users.get(users.size() - 1).getId() + 1;
+        return id == null ? 1L : id + 1;
     }
 
     public User save(User user) {
 
-        users.add(user);
+        id = user.getId();
+        users.put(user.getId(), user);
+        usernameIndex.put(user.getUsername(), user.getId());
 
-        return users.get(users.size() - 1);
+        return users.get(id);
+    }
+
+    public Optional<User> findByUsername(String username) {
+
+        Long id = usernameIndex.get(username);
+
+        return id == null ? Optional.empty() : Optional.of(users.get(id));
     }
 }
