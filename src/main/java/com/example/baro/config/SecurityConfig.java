@@ -43,7 +43,9 @@ public class SecurityConfig {
                         .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.ERROR).permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers(
-                                "/auth/**"
+                                "/auth/**",
+                                "/swagger-ui/**",
+                                "/api-docs/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
